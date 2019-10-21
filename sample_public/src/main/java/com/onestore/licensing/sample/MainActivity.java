@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {
                 Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                        "https://m.onestore.co.kr/mobilepoc/apps/appsDetail.omp?prodId="+PID));
+                        "https://onestore.co.kr/userpoc/game/view?pid="+PID));
                 startActivity(marketIntent);
             }
         });
