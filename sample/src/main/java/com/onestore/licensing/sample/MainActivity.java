@@ -9,9 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
 import com.onestore.app.licensing.AppLicenseChecker;
 import com.onestore.app.licensing.LicenseCheckerListener;
+
+import static com.onestore.app.licensing.Enumeration.HandleError.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String BASE64_PUBLIC_KEY = "INSERT YOUR PUBLIC_KEY";
     private static final String PID = "INSERT YOUR PID";
 
+    private boolean isFlexiblePolicy = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 // License Verify Flexible
                 appLicenseChecker = new AppLicenseChecker(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
                 appLicenseChecker.queryLicense();
+                isFlexiblePolicy = true;
             }
         });
         strict.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 // License Verify Strict
                 appLicenseChecker = new AppLicenseChecker(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
                 appLicenseChecker.strictQueryLicense();
+                isFlexiblePolicy = false;
             }
         });
     }
@@ -89,24 +93,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleError(int errorCode) {
-        if (2000 == errorCode && 2100 > errorCode ) {
+        if (SERVICE_UNAVAILABLE.getCode() <= errorCode && SERVICE_TIMEOUT.getCode() > errorCode ) {
             unknownErrorDialog();
-        } else if (2100 == errorCode) {
+        } else if (SERVICE_TIMEOUT.getCode() == errorCode) {
             goSettingForNetwork();
-        } else if (2101 == errorCode) {
+        } else if (USER_LOGIN_CANCELED.getCode() == errorCode) {
             retryLoginDialog();
-        } else if (2102 == errorCode) {
-        } else if (2103 == errorCode) {
+        } else if (ONESTORE_SERVICE_INSTALLING.getCode() == errorCode) {
+        } else if (INSTALL_USER_CANCELED.getCode() == errorCode) {
             retryInstall();
-        } else if (2104 == errorCode) {
+        } else if (NOT_FOREGROUND.getCode() == errorCode) {
             retryALC();
-        } else if (1 == errorCode) {
+        } else if (RESULT_USER_CANCELED.getCode() == errorCode) {
             retryLoginDialog();
-        }  else if (2 == errorCode) {
+        }  else if (RESULT_SERVICE_UNAVAILABLE.getCode() == errorCode) {
             goSettingForNetwork();
-        } else if (3 == errorCode) {
+        } else if (RESULT_ALC_UNAVAILABLE.getCode() == errorCode) {
             // download library link : https://github.com/ONE-store/app_license_checker
-        } else if (5 == errorCode) {
+        } else if (RESULT_DEVELOPER_ERROR.getCode() == errorCode) {
             unknownErrorDialog();
         } else {
             unknownErrorDialog();
@@ -114,9 +118,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void retryALC() {
-        if(null == appLicenseChecker)
+        if(null == appLicenseChecker) {
             appLicenseChecker = new AppLicenseChecker(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
-        appLicenseChecker.queryLicense();
+        }
+
+        if ((true == isFlexiblePolicy)) {
+            appLicenseChecker.queryLicense();
+        } else {
+            appLicenseChecker.strictQueryLicense();
+        }
     }
 
 

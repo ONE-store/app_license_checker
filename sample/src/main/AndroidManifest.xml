@@ -16,6 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.onestore.licensing.sample.kotlin.KotlinMainActivity"/>
     </application>
 
 </manifest>
