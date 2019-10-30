@@ -4,14 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/description"
+        />
     <Button
         android:id="@+id/check_licensing_flexible"
         android:layout_width="300dp"
         android:layout_height="100dp"
+        android:layout_marginTop="100dp"
         android:text="app licensing (flexible)"/>
 
     <Button
@@ -19,5 +28,6 @@
         android:layout_width="300dp"
         android:layout_height="100dp"
         android:text="app licensing (strict)"/>
+
 
 </LinearLayout>
