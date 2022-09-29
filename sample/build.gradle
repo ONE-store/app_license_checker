@@ -1,29 +1,52 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.onestore.licensing.sample"
-        minSdkVersion 14
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 2
+        versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue "string", "app_name", "Sample Licensing"
+        buildConfigField "String", "PUBLIC_KEY", "\"INSERT YOUR LICENSE KEY\""
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "app_market_detail_url", "https://m.onestore.co.kr/mobilepoc/apps/appsDetail.omp?prodId="
+        }
+
+        debug {
+            minifyEnabled false
+            resValue "string", "app_market_detail_url", "https://qa-m.onestore.co.kr/mobilepoc/apps/appsDetail.omp?prodId="
+        }
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        v2_update {
+            resValue "string", "app_name", "Sample Licensing"
+            applicationId "com.dev.inapp.test"
+            buildConfigField "String", "PUBLIC_KEY", "\"INSERT YOUR LICENSE KEY\""
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+//    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+
+    implementation "com.onestorecorp.sdk:sdk-licensing:$onestore_alc_version"
+    implementation "com.onestorecorp.sdk:$onestore_configuration_korea_region:$onestore_configuration_version"
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

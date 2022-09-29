@@ -1,24 +1,27 @@
 package com.onestore.licensing.sample;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import com.onestore.app.licensing.AppLicenseChecker;
-import com.onestore.app.licensing.LicenseCheckerListener;
 
-import static com.onestore.app.licensing.Enumeration.HandleError.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.onestore.extern.licensing.AppLicenseChecker;
+import com.onestore.extern.licensing.LicenseCheckerListener;
 
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = MainActivity.class.getSimpleName();
     private AppLicenseChecker appLicenseChecker;
-    private static final String BASE64_PUBLIC_KEY = "INSERT YOUR PUBLIC_KEY";
+    private static final String BASE64_PUBLIC_KEY = BuildConfig.PUBLIC_KEY;
     private static final String PID = "INSERT YOUR PID";
 
     private boolean isFlexiblePolicy = true;
@@ -30,12 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
         Button flexible = (Button)findViewById(R.id.check_licensing_flexible);
         Button strict = (Button)findViewById(R.id.check_licensing_strict);
+        Button myService = (Button)findViewById(R.id.my_service);
 
         flexible.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // License Verify Flexible
-                appLicenseChecker = new AppLicenseChecker(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
+                appLicenseChecker = AppLicenseChecker.get(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
                 appLicenseChecker.queryLicense();
                 isFlexiblePolicy = true;
             }
@@ -44,11 +48,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // License Verify Strict
-                appLicenseChecker = new AppLicenseChecker(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
+                appLicenseChecker = AppLicenseChecker.get(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
                 appLicenseChecker.strictQueryLicense();
                 isFlexiblePolicy = false;
             }
         });
+
+
+        myService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MyService.class);
+                startService(intent);
+            }
+        });
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if(null != intent) {
+            int errorCode = intent.getIntExtra("errorCode",-1);
+            if (0 < errorCode ) {
+                handleError(errorCode);
+            }
+        }
     }
 
     private class AppLicenseListener implements LicenseCheckerListener {
@@ -63,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void denied() {
+            Log.d(TAG, "denied");
             if (isFinishing()) {
                 return;
             }
@@ -72,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void error(int errorCode, String error) {
+            Log.d(TAG, "error: " + errorCode);
             if (isFinishing()) {
                 return;
             }
@@ -85,32 +113,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
         if (null != appLicenseChecker)
             appLicenseChecker.destroy();
+
+        if(true == isMyServiceRunning(MyService.class)) {
+            Intent intent = new Intent(MainActivity.this, MyService.class);
+            stopService(intent);
+        }
 
         super.onDestroy();
     }
 
     private void handleError(int errorCode) {
-        if (SERVICE_UNAVAILABLE.getCode() <= errorCode && SERVICE_TIMEOUT.getCode() > errorCode ) {
+        Log.d(TAG, "error code : " + errorCode);
+        if (AppLicenseChecker.ResponseCode.ERROR_SERVICE_UNAVAILABLE <= errorCode && AppLicenseChecker.ResponseCode.ERROR_SERVICE_TIMEOUT > errorCode ) {
             unknownErrorDialog();
-        } else if (SERVICE_TIMEOUT.getCode() == errorCode) {
+        } else if (AppLicenseChecker.ResponseCode.ERROR_SERVICE_TIMEOUT == errorCode) {
             goSettingForNetwork();
-        } else if (USER_LOGIN_CANCELED.getCode() == errorCode) {
+        } else if (AppLicenseChecker.ResponseCode.ERROR_USER_LOGIN_CANCELED == errorCode) {
             retryLoginDialog();
-        } else if (ONESTORE_SERVICE_INSTALLING.getCode() == errorCode) {
-        } else if (INSTALL_USER_CANCELED.getCode() == errorCode) {
+        } else if (AppLicenseChecker.ResponseCode.ERROR_INSTALL_USER_CANCELED == errorCode) {
             retryInstall();
-        } else if (NOT_FOREGROUND.getCode() == errorCode) {
+        } else if (AppLicenseChecker.ResponseCode.ERROR_NOT_FOREGROUND == errorCode) {
             retryALC();
-        } else if (RESULT_USER_CANCELED.getCode() == errorCode) {
+        } else if (AppLicenseChecker.ResponseCode.RESULT_USER_CANCELED == errorCode) {
             retryLoginDialog();
-        }  else if (RESULT_SERVICE_UNAVAILABLE.getCode() == errorCode) {
+        }  else if (AppLicenseChecker.ResponseCode.RESULT_SERVICE_UNAVAILABLE == errorCode) {
             goSettingForNetwork();
-        } else if (RESULT_ALC_UNAVAILABLE.getCode() == errorCode) {
+        } else if (AppLicenseChecker.ResponseCode.RESULT_ALC_UNAVAILABLE == errorCode) {
             // download library link : https://github.com/ONE-store/app_license_checker
-        } else if (RESULT_DEVELOPER_ERROR.getCode() == errorCode) {
+        } else if (AppLicenseChecker.ResponseCode.RESULT_DEVELOPER_ERROR == errorCode) {
             unknownErrorDialog();
         } else {
             unknownErrorDialog();
@@ -119,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void retryALC() {
         if(null == appLicenseChecker) {
-            appLicenseChecker = new AppLicenseChecker(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
+            appLicenseChecker = AppLicenseChecker.get(MainActivity.this, BASE64_PUBLIC_KEY, new AppLicenseListener());
         }
 
         if ((true == isFlexiblePolicy)) {
@@ -150,8 +188,9 @@ public class MainActivity extends AppCompatActivity {
                 "finish",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
+                        Log.d(TAG, getString(R.string.app_market_detail_url) + PID);
                         Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                getString(R.string.app_market_detail_url)+PID));
+                                getString(R.string.app_market_detail_url) + PID));
                         startActivity(marketIntent);
                     }
                 },
@@ -228,5 +267,15 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

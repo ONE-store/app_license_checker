@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -29,5 +29,11 @@
         android:layout_height="100dp"
         android:text="app licensing (strict)"/>
 
+
+    <Button
+        android:id="@+id/my_service"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:text="background service"/>
 
 </LinearLayout>

@@ -1,7 +1,5 @@
 <resources>
-    <string name="app_name">ALC Sample</string>
     <string name="description">ONE store provides the license service (Application License Checker, ALC) to enable you to apply the license policy in your applications.\n With the ALC service, you can check in real-time if customers using the app have a valid license, and then determine whether additional use is appropriate.</string>
-    <string name="app_market_detail_url">https://onestore.co.kr/userpoc/apps/view?pid=</string>
     <string name="download_onestore_service_url">https://m.onestore.co.kr/mobilepoc/etc/downloadGuide.omp</string>
 
     <string name="does_not_exist">Purchase history does not exist.\nWould you like to buy from One Store?</string>
