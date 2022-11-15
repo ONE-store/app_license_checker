@@ -27,7 +27,10 @@ dependencies {
 }
 ```
 
-Next, enter your license key to your project gradle.
+Next, enter your license key to your project gradle. The method below is used only in the test app.
+
+***Cause***<br/>
+For license keys, it is recommended to use it after receiving it through a server rather than saving it as an in-app code to ensure security.
 
 ```
 android {
