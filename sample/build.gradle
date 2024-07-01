@@ -44,7 +44,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
 
     implementation "com.onestorecorp.sdk:sdk-licensing:$onestore_alc_version"
-    implementation "com.onestorecorp.sdk:$onestore_configuration_korea_region:$onestore_configuration_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.4.0'

@@ -4,10 +4,7 @@ buildscript {
     ext {
 
         kotlin_version = '1.5.30'
-        onestore_alc_version = '2.0.0'
-        onestore_configuration_korea_region = 'sdk-configuration-kr'
-        onestore_configuration_version = '1.0.0'
-
+        onestore_alc_version = '2.1.1'
         compileSdkVersion = 33
         minSdkVersion = 16
         targetSdkVersion = 33
@@ -33,7 +30,7 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        maven { url 'https://repo.onestore.co.kr/repository/onestore-sdk-public' }
+        maven { url 'https://repo.onestore.net/repository/onestore-sdk-public' }
     }
 }
 

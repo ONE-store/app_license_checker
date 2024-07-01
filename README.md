@@ -10,7 +10,7 @@ Add the maven url to root gradle.
 ```
 repositories {
     ...
-    maven { url 'https://repo.onestore.co.kr/repository/onestore-sdk-public' }
+    maven { url 'https://repo.onestore.net/repository/onestore-sdk-public' }
 }
 ```
 
@@ -18,12 +18,9 @@ And, add the dependency to your project gradle.
 
 ```
 dependencies {
-    def onestore_alc_version = "2.0.0"
-    def onestore_configuration_version = "1.0.0"
-    def onestore_configuration_region = "sdk-configuration-kr"
+    def onestore_alc_version = "2.1.1"
     
     implementation "com.onestorecorp.sdk:sdk-licensing:$onestore_alc_version"
-    implementation "com.onestorecorp.sdk:$onestore_configuration_region:$onestore_configuration_version"
 }
 ```
 
@@ -54,7 +51,10 @@ If you want to download older SDK(v1), click [This Link](https://github.com/ONE-
     * Can download json file for korea region using the maven.
 
 ## Change Note
-
+* 2024-07-01
+    * Maven Url changed.
+    * Application License Checker v2.1.1 has been applied.
+    * `sdk-configuration-xx` is deprecated.
 * 2022-09-29
     * Uploaded samples for ONEstore Application License Checker Library v2. 
 
