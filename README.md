@@ -18,7 +18,7 @@ And, add the dependency to your project gradle.
 
 ```
 dependencies {
-    def onestore_alc_version = "2.1.1"
+    def onestore_alc_version = "2.2.1"
     
     implementation "com.onestorecorp.sdk:sdk-licensing:$onestore_alc_version"
 }
@@ -51,6 +51,11 @@ If you want to download older SDK(v1), click [This Link](https://github.com/ONE-
     * Can download json file for korea region using the maven.
 
 ## Change Note
+* 2025-03-10
+    * Fix exception handling bug when using `getApplicationEnabledSetting()`
+* 2025-02-25
+    * Enhanced developer option features
+    * Added `StoreEnvironment.getStoreType()` API
 * 2024-07-01
     * Maven Url changed.
     * Application License Checker v2.1.1 has been applied.
